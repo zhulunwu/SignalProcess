@@ -22,6 +22,6 @@ function vec2frames(data::Array,samples_frame::Int,hops::Int)
     return hcat(frames...)
 end
 
-signal=vec(first(wavread("Ideal Binary Mask/matlab/sp10.wav")))
-noise=vec(first(wavread("Ideal Binary Mask/matlab/ssn.wav")))
+signal=vec(first(wavread("IdealBinaryMask/matlab/sp10.wav")))
+noise=vec(first(wavread("IdealBinaryMask/matlab/ssn.wav")))
 mixed,noise=addnoise(signal,noise,-5)
