@@ -42,15 +42,15 @@ pwav=title(pwav,"Waveform:processed SegSNR=$(psnr)",textsize=16);
 
 csgm=spectrogram(speech_clean,512,448,fs=fs,window=hamming);
 csgm=heatmap(csgm.time,csgm.freq,log10.(csgm.power'),transparency=true,colormap=:gray);
-csgm=title(csgm,"Waveform:clean SegSNR=$(csnr)",textsize=16);
+csgm=title(csgm,"Spectrogram:clean SegSNR=$(csnr)",textsize=16);
 
 nsgm=spectrogram(speech_noisy,512,448,fs=fs,window=hamming);
 nsgm=heatmap(nsgm.time,nsgm.freq,log10.(nsgm.power'),transparency=true,colormap=:gray);
-nsgm=title(nsgm,"Waveform:clean SegSNR=$(nsnr)",textsize=16);
+nsgm=title(nsgm,"Spectrogram:noisy SegSNR=$(nsnr)",textsize=16);
 
 psgm=spectrogram(speech_processed,512,448,fs=fs,window=hamming);
 psgm=heatmap(psgm.time,psgm.freq,log10.(psgm.power'),transparency=true,colormap=:gray);
-psgm=title(psgm,"Waveform:clean SegSNR=$(psnr)",textsize=16);
+psgm=title(psgm,"Spectrogram:processed SegSNR=$(psnr)",textsize=16);
 
 figs=hbox(vbox(pwav,psgm),vbox(nwav,nsgm),vbox(cwav,csgm))
 save("test_idbm_julia.png",figs)

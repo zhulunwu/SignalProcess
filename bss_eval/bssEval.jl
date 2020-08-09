@@ -75,7 +75,7 @@ function bss_decomp_gain(se,index,S,N=[],L=0)
     bss_decomp_filt(se,index,S,N,L)
 end
 
-fix(x)=x>0 ? floor(Int,x):ceil(Int,x)
+fix(x)=x>0 ? floor(Int,x) : ceil(Int,x)
 function bss_make_frames(S,WINDOW,NOVERLAP)
     n,T=size(S)
     W=length(WINDOW)
