@@ -1,4 +1,4 @@
-using GR
+include("common.jl")
 
 # Unit sample sequence
 function impseq(n0::Int,n1::Int,n2::Int)
@@ -20,8 +20,8 @@ end
 # fig2.1a
 n = -5:5
 x = 2*last(impseq(-2,-5,5)) - last(impseq(4,-5,5))
-stem(n,x)
-xlabel("n"); ylabel("x(n)")
+s=stem(n,x)
+xlabel!(s,"n"); ylabel!(s,"x(n)")
 
 # fig2.1b
 n = 0:20 
