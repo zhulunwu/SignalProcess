@@ -38,7 +38,7 @@ function updateS(Y,A::Array{Float64,2},lambda,S::Array{Float64,2};maxIter=10000,
         catch
             error("Error in S Iteration calculation")
         end
-        if sum(abs(Sp-S))<(threshold*sum(S))
+        if sum(abs.(Sp-S))<(threshold*sum(S))
             converged=true
             break
         end
@@ -74,7 +74,7 @@ function updateA(Y,S::Array{Float64,2},A::Array{Float64,2};maxIter=10000,thresho
         Ap=A
         A = max(B-(B*H-YSt)/L,0)
 
-        if sum(abs(Ap-A))<(threshold*sum(A))
+        if sum(abs.(Ap-A))<(threshold*sum(A))
             converged=true
             break
         end
@@ -91,7 +91,7 @@ function updateLambda!(A::Array{Float64,2},S::Array{Float64,2},Y,iteration,maxIt
     if refinement_beginning > iteration
 
 
-        sigma_residue = 1.4826 * median(abs((Y - A*S)[:].-median((Y - A*S)[:])))
+        sigma_residue = 1.4826 * median(abs.((Y - A*S)[:].-median((Y - A*S)[:])))
         #linear decrease to tau_MAD*sigma_residue when reaching the refinement steps
         lambda = maximum([sigma_residue, lambda - 1/(refinement_beginning - iteration) * (lambda - sigma_residue)])
 
@@ -113,7 +113,7 @@ function nGMCA(Y::Array{Float64},r;verbose=false,maxIter=5000,threshold=1e-6,pha
     A=Y/S
 
     #Estimate an L0
-    l=maximum(abs(A'*(A*S-Y)))
+    l=maximum(abs.(A'*(A*S-Y)))
 
     if verbose && kickstart
         print("\nKickstarting BSS...")
@@ -158,7 +158,7 @@ function nGMCA(Y::Array{Float64},r;verbose=false,maxIter=5000,threshold=1e-6,pha
             "\tL:",round(l,5),"\t Dist to Y: ",round(sum((A*S-Y).^2.).^.5),5))
         end
 
-        if mod(j,10)==0 && sum(abs(A-Ap))/length(A)<threshold && sum(abs(S-Sp))/length(S)<threshold
+        if mod(j,10)==0 && sum(abs.(A-Ap))/length(A)<threshold && sum(abs.(S-Sp))/length(S)<threshold
             break
         end
     end
@@ -168,7 +168,7 @@ function nGMCA(Y::Array{Float64},r;verbose=false,maxIter=5000,threshold=1e-6,pha
             print("\nFailed to converge!\n")
         end
     end
-    return {A,S}
+    return Dict(A,S)
 end
 
 

@@ -43,7 +43,7 @@ function ZAP(Y::Array{Float64,2},A::Array{Float64,2};maxIter=500,kappa=.1,neu=.1
     iteration=0
     for iteration = 1:maxIter
 
-        if mod(iteration ,int(Q))==0
+        if mod(iteration ,Int(Q))==0
             previous_guess = deepcopy(guess)
 
             if verbose
@@ -54,7 +54,7 @@ function ZAP(Y::Array{Float64,2},A::Array{Float64,2};maxIter=500,kappa=.1,neu=.1
 
         guess = guess - kappa * dJ(guess,alpha)
         guess = guess + A_inv*(Y-A*guess)
-        if mod(iteration ,int(Q))==0 && sum(r2(guess))>=sum(r2(previous_guess))
+        if mod(iteration ,Int(Q))==0 && sum(r2(guess))>=sum(r2(previous_guess))
             kappa=neu*kappa
 
             if kappa<= threshold

@@ -1,7 +1,9 @@
 #An example of nGMCA
-using CompressedSensing
-using PyPlot
-srand(1)
+using Makie
+include("cssrc/CompressedSensing.jl")
+using Main.CompressedSensing
+import Random.seed!
+seed!(1)
 
 #Generate some sparse positive data, S and A
 n=1000
@@ -14,10 +16,10 @@ A=zeros(n,r)
 S=zeros(r,m)
 
 for i =1:n
-    A[i,int(rand(k_a)*(r-1))+1]=rand(k_a)
+    A[i,floor.(Int,rand(k_a)*(r-1)) .+ 1]=rand(k_a)
 end
 for i =1:m
-    S[int(rand(k_s)*(r-1))+1,i]=rand(k_s)
+    S[floor.(Int,rand(k_s)*(r-1)) .+ 1,i]=rand(k_s)
 end
 
 #calculate the Gini Index of the data
@@ -27,7 +29,7 @@ print(string("GI(S): ",GI(S),"    GI(A): ",GI(A)))
 Y=A*S
 
 #attempt to rebuild the inputs from only the output
-(A0,S0)=nGMCA(Y,r;verbose=true,maxIter=100,threshold=1e-7,phaseRatio=.15)
+(A0,S0)=nGMCA(Y,r;verbose=true,maxIter=100,threshold=1e-7,phaseRatio=0.15)
 
 #See how well it correlates with the inputs
 figure(figsize=(12,5))

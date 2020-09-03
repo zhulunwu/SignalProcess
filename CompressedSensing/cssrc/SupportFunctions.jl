@@ -1,3 +1,5 @@
+using LinearAlgebra
+
 function FindSol(Y,A,M,Mt)
     return A-Mt*(M*A-Y)
 end
@@ -6,7 +8,7 @@ function InitSolution(MeasurementMatrix,MeasuredOutput,m)
 
     #Guess a random solution
     GuessedInput=zeros(m)
-    GuessedInput[round(rand(int(m/10))*(m-1)+1,0)]=rand(int(m/10))
+    GuessedInput[round.(Int,rand(m÷10)*(m-1) .+ 1)]=rand(m÷10)
 
     #project the guessed solution into the space of exact answers
     GuessedInput=FindSol(MeasuredOutput,
@@ -18,7 +20,7 @@ function InitSolution(MeasurementMatrix,MeasuredOutput,m)
 end
 
 function plusOp(x)
-    max(x,0)
+    max.(x,0)
 end
 
 

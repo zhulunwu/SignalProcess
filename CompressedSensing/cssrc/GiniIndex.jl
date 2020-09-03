@@ -4,7 +4,7 @@ function GI(x::Array)
     @assert eltype(x)<:Number
 
     #Reshape the incoming matrix into a sorted 1xn list of positive numbers
-    x=abs(x[:])
+    x=abs.(x[:])
     sort!(x)
     
     n=length(x)
