@@ -1,5 +1,5 @@
 include("SupportFunctions.jl")
-
+using Statistics
 
 function updateS(Y,A::Array{Float64,2},lambda,S::Array{Float64,2};maxIter=10000,threshold=1e-5)
 
@@ -34,7 +34,7 @@ function updateS(Y,A::Array{Float64,2},lambda,S::Array{Float64,2};maxIter=10000,
         Sp=S
         try
             #S=plusOp(soft(R-(H*R-AtY)/L,lambda/L))
-            S=max(R-(H*R-AtY)/L-lambda/L,0)
+            S=max.(R-(H*R-AtY)/L .- lambda/L,0)
         catch
             error("Error in S Iteration calculation")
         end
@@ -72,7 +72,7 @@ function updateA(Y,S::Array{Float64,2},A::Array{Float64,2};maxIter=10000,thresho
 
         B = (1+(tp-1)/(t)) * A - (tp-1)/(t) * Ap
         Ap=A
-        A = max(B-(B*H-YSt)/L,0)
+        A = max.(B-(B*H-YSt)/L,0)
 
         if sum(abs.(Ap-A))<(threshold*sum(A))
             converged=true
@@ -143,7 +143,7 @@ function nGMCA(Y::Array{Float64},r;verbose=false,maxIter=5000,threshold=1e-6,pha
 
         #normalize columns of A
         for i=1:size(A,2)
-            A[:,i]= A[:,i]./(sum(A.^2.,1).^.5)[i]
+            A[:,i]= A[:,i]./(sum(A.^2.0,dims=1).^0.5)[i]
         end
 
         (A,S)=m_reinitializeS(A,S, Y, verbose)
@@ -153,9 +153,9 @@ function nGMCA(Y::Array{Float64},r;verbose=false,maxIter=5000,threshold=1e-6,pha
         l=updateLambda!(A,S,Y,j,submaxiter,phaseRatio,l)
 
         if verbose && mod(j,max(div(maxIter,100),1))==0
-            print("\r"*string("GI(S) ",round(GI(S),3)," GI(A) ",
-            round(GI(A),3),"\t Iterations Total:",j,"  S:",S_iter," A: ",A_iter,
-            "\tL:",round(l,5),"\t Dist to Y: ",round(sum((A*S-Y).^2.).^.5),5))
+            print("\r"*string("GI(S) ",round(GI(S),digits=3)," GI(A) ",
+            round(GI(A),digits=3),"\t Iterations Total:",j,"  S:",S_iter," A: ",A_iter,
+            "\tL:",round(l,digits=5),"\t Dist to Y: ",round(sum((A*S-Y).^2.).^.5),5))
         end
 
         if mod(j,10)==0 && sum(abs.(A-Ap))/length(A)<threshold && sum(abs.(S-Sp))/length(S)<threshold
@@ -179,11 +179,11 @@ function m_reinitializeS(A,S, Y, verbose)
     #straightforward reinitialization of a line of S and a column of A
     #by picking one column in the residue
     attempt=0
-    while sum(sum(S, 2) .== 0) > 0 && attempt<10
+    while sum(sum(S,dims=2) .== 0) > 0 && attempt<10
         if verbose
-            print("\r"*string("Reinitilizing blank rows/columns: ",sum(sum(S,2).==0)))
+            print("\r"*string("Reinitilizing blank rows/columns: ",sum(sum(S,dims=2).==0)))
         end
-        indices = [sum(S, 2) .== 0][:]
+        indices = vec(sum(S,dims=2) .== 0)
 
         (A[:, indices], S[indices, :]) = m_fastExtractNMF(Y - A * S, sum(indices))
         attempt+=1
@@ -194,24 +194,24 @@ end
 
 function m_fastExtractNMF(residual, r)
     if r > 0
-        (m, n) = size(residual);
-        A = zeros(m, r);
-        S = zeros(r, n);
+        (m, n) = size(residual)
+        A = zeros(m, r)
+        S = zeros(r, n)
         for i = 1 : r
-            residual = max(residual,0)
+            residual = max.(residual,0)
             if sum(residual[:]) != 0
                 #compute square norm of residual to select maximum one
-                res2 = sum(residual.^2,1);
-                j = findin(res2,maximum(res2));
+                res2 = sum(residual.^2,dims=1)
+                j = findall(isequal(maximum(res2)),res2)
                 if !isempty(j)
-                    j = j[1];
+                    j = j[1]
                     if res2[j] > 0
                         #normalize maximum residual
-                        A[:, i] = residual[:, j] / res2[j].^.5;
+                        A[:, i] = residual[:, j] / res2[j].^.5
                         #compute scalar product with the rest of the residual and keep only
                         #positive coefficients
                         S[i, :] = A[:, i]' * residual;
-                        S[i, :] = max(S[i, :], zeros(size(S[i,:])) );
+                        S[i, :] = max.(S[i, :], zeros(size(S[i,:])) );
                         #compute new residual
                         residual = residual - A[:, i] * S[i, :];
                     end
