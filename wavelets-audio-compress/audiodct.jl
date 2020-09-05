@@ -1,4 +1,4 @@
-using FFTW
+using DSP.FFTW
 
 function compressaudiodct(channels, threshold)
     # Split channels

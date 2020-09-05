@@ -1,9 +1,9 @@
 include("dwt.jl")
 include("audiodwt.jl")
 include("audiodct.jl")
-using WAV
+using MFCC.WAV
 using LinearAlgebra
-using Plots
+using Makie
 
 # Read song, Am I Blue
 # Sung by Kevin Conroy, listen for free at http://www.realkevinconroy.com/
@@ -32,6 +32,7 @@ werrors = zeros(length(thresholds), length(ps))
 ferrors = zeros(length(thresholds))
 
 for i = 1:length(thresholds)
+    println("\r"*"第$(i)步总$(length(thresholds))步")
     threshold = thresholds[i]
     for j = 1:length(ps)
         # Fetch wavelet filters
@@ -58,14 +59,11 @@ for i = 1:length(thresholds)
 end
 
 
-# Plot
+# use log10 to modify the x-axis data so it is in accordance with that in paper
 x = 100 / sizeof(channels)
-plot(werrors[:,1], wsizes[:,1] .* x, label=string("DAUB", 2ps[1]));
+plot(log10.(werrors[:,1]), wsizes[:,1] .* x)
 for i = 2:length(ps)
     p = ps[i]
-    plot!(werrors[:,i], wsizes[:,i] .* x, label=string("DAUB", 2p));
+    plot!(log10.(werrors[:,i]), wsizes[:,i] .* x)
 end
-plot!(ferrors, fsizes .* x, label="DCT");
-title!("Comparison of Compression Accuracy of DWT and DCT");
-xaxis!("Relative Root Mean Squared Error of Reconstruction", :log10);
-yaxis!("Percentage of original file size (%)")
+plot!(log10.(ferrors), fsizes .* x)

@@ -1,4 +1,4 @@
-using NLsolve
+using DifferentialEquations.SteadyStateDiffEq.NLsolve
 
 # Precondition: ∃ J ∈ ℤ: length(f) = 2^J
 # Returns: ((a0, b0, b1, ...), length(a0))
