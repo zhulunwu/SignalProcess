@@ -1,16 +1,17 @@
 # 盲源分离评估
 
 # 本函数计算向量在子空间中的正交投影。
-# v是一维向量，为列向量。s为由多个列向量构成的子空间
+# v是一维向量，为列向量。s为由多个列向量构成的子空间.最后的结果是向量在子空间的投影，仍然是矢量而不是矩阵。就像直线在平面上的投影仍然是直线。
 function subspaceProjection(v::Array,s::Array) 
     c=(s'*s)\(s'*v)
     p=s*c
     return p
 end
 
+# se means singal estimated,index is the target index.
 function bss_decomp_gain(se,index,S)            
-    s_target = subspaceProjection(se,S[:,index])  
-    P_S_se = subspaceProjection(se,S)
+    s_target = subspaceProjection(se,S[:,index])  #projection on a specific vector
+    P_S_se = subspaceProjection(se,S) # projection on subspace spaned by multi-vectors, result still a vector, not matrix
     e_interf = P_S_se - s_target
     e_artif= se - P_S_se            
     
