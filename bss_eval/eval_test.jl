@@ -1,5 +1,5 @@
 using MFCC.WAV
-include("bssEval-lite.jl")
+include("bssEval.jl")
 s1=wavread("data\\s1.wav")[1]
 s2=wavread("data\\s2.wav")[1]
 s=[s1 s2]
