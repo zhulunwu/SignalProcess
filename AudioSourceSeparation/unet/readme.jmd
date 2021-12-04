@@ -1,0 +1,33 @@
+# 基于flux的wave-U-net
+<todo>数据库转换<done>
+<todo>函数：读入数据并转成单声道
+    需要考虑采样率的转换
+<done>
+
+<todo>从音轨中随机挑取某个长度的片段<done>
+<todo>构筑神经网络
+    <todo>一维卷积<done>
+    <todo>双线性插值(using imresize instead)<done>
+    <todo>crop and concat<done>
+    <todo>输出层<done>
+<done>
+
+<todo>损失函数<done>
+<todo>模型参数提取问题<done>
+<todo>resize函数的Flux兼容版本
+    算法：两点之间插入一个点，线性。最后一个点重复。
+    images的imresize函数和原代码中的双线性插值函数并不相同。
+<done>
+<todo>循环方式定义的模型<done>
+<todo>模型的保存<done>
+<todo>模型的应用
+
+- 另外一个上采样的函数
+function usmp(x::Array{Float32,3})
+    r,c,p=size(x)
+    f(x)=vcat([i<r ? [x[i];Float32(0.5)*(x[i]+x[i+1])] : [x[end];x[end]] for i=1:r]...)
+    return mapslices(f,x,dims=1)
+end
+虽然比较简洁，但是计算效率似乎并不高。
+
+eachslice(x,dims=1)

@@ -1,13 +1,10 @@
-using LibSndFile
-using FileIO
 using DSP
 using Makie
+using WAV
 
 include("istft.jl")
 
-wav=load("track.wav")
-fs=wav.samplerate
-data=float.(wav.data)
+data,fs=wavread("track.wav")
 x = data[:,1]
 
 xlen = length(x)
@@ -22,4 +19,9 @@ data_stft= stft(x,wlen,noverlap,nfft=nfft,window=hanning)
 x_istft = istft(data_stft,wlen, noverlap,nfft=nfft,window=hanning)
 t_istft = (0:length(x_istft)-1)/fs
 
-vbox(plot(t, x),plot(t_istft, x_istft))
+vbox(lines(t, x),lines(t_istft, x_istft))
+
+data_stft= stft(x,wlen,noverlap)
+x_istft = istft(data_stft,wlen, noverlap)
+t_istft = (0:length(x_istft)-1)/fs
+vbox(lines(t, x),lines(t_istft, x_istft))
